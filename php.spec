@@ -5,7 +5,7 @@
 
 Summary: The PHP HTML-embedded scripting language
 Name: php
-Version: 5.2.3
+Version: 5.2.4
 Release: 1%{?dist}
 License: The PHP License v3.01
 Group: Development/Languages
@@ -16,23 +16,23 @@ Source1: php.conf
 Source2: php.ini
 Source3: macros.php
 
-Patch1: php-5.1.4-gnusrc.patch
+Patch1: php-5.2.4-gnusrc.patch
 Patch2: php-4.3.3-install.patch
-Patch3: php-5.0.4-norpath.patch
+Patch3: php-5.2.4-norpath.patch
 Patch5: php-5.0.2-phpize64.patch
 Patch8: php-5.2.0-includedir.patch
 
 # Fixes for extension modules
-Patch21: php-4.3.1-odbc.patch
+Patch21: php-5.2.4-odbc.patch
 Patch22: php-4.3.11-shutdown.patch
 Patch23: php-5.2.2-pdosym.patch
 
 # Functional changes
 Patch30: php-5.0.4-dlopen.patch
-Patch31: php-5.0.0-easter.patch
+Patch31: php-5.2.4-easter.patch
 
 # Fixes for tests
-Patch50: php-5.0.4-tests-dashn.patch
+Patch50: php-5.2.4-tests-dashn.patch
 Patch51: php-5.0.4-tests-wddx.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -678,6 +678,9 @@ rm files.* macros.php
 %files mssql -f files.mssql
 
 %changelog
+* Tue Sep 18 2007 Joe Orton <jorton@redhat.com> 5.2.4
+- update to 5.2.4
+
 * Mon Jul  2 2007 Joe Orton <jorton@redhat.com> 5.2.3-1.fc7
 - obsolete php-dbase
 - add mcrypt, mhash, tidy, mssql subpackages (Dmitry Butskoy)
