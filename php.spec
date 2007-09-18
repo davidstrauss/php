@@ -678,7 +678,7 @@ rm files.* macros.php
 %files mssql -f files.mssql
 
 %changelog
-* Tue Sep 18 2007 Joe Orton <jorton@redhat.com> 5.2.4
+* Tue Sep 18 2007 Joe Orton <jorton@redhat.com> 5.2.4-1.fc7
 - update to 5.2.4
 
 * Mon Jul  2 2007 Joe Orton <jorton@redhat.com> 5.2.3-1.fc7
