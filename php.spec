@@ -5,7 +5,7 @@
 
 Summary: The PHP HTML-embedded scripting language
 Name: php
-Version: 5.2.4
+Version: 5.2.5
 Release: 1%{?dist}
 License: The PHP License v3.01
 Group: Development/Languages
@@ -25,7 +25,6 @@ Patch8: php-5.2.0-includedir.patch
 # Fixes for extension modules
 Patch21: php-5.2.4-odbc.patch
 Patch22: php-4.3.11-shutdown.patch
-Patch23: php-5.2.2-pdosym.patch
 
 # Functional changes
 Patch30: php-5.0.4-dlopen.patch
@@ -341,7 +340,6 @@ database server which supports TDS can be accessed.
 
 %patch21 -p1 -b .odbc
 %patch22 -p1 -b .shutdown
-%patch23 -p1 -b .pdosym
 
 %patch30 -p1 -b .dlopen
 %patch31 -p1 -b .easter
@@ -678,6 +676,9 @@ rm files.* macros.php
 %files mssql -f files.mssql
 
 %changelog
+* Tue Dec 11 2007 Joe Orton <jorton@redhat.com> 5.2.5-1.fc7
+- update to 5.2.5
+
 * Tue Sep 18 2007 Joe Orton <jorton@redhat.com> 5.2.4-1.fc7
 - update to 5.2.4
 
