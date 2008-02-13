@@ -6,7 +6,7 @@
 Summary: The PHP HTML-embedded scripting language
 Name: php
 Version: 5.2.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: The PHP License v3.01
 Group: Development/Languages
 URL: http://www.php.net/
@@ -461,6 +461,7 @@ ln -sf ../configure
         --without-sqlite \
         --with-libxml-dir=%{_prefix} \
 	--with-xml \
+        --with-system-tzdata \
 	$* 
 if test $? != 0; then 
   tail -500 config.log
@@ -678,7 +679,7 @@ rm files.* macros.php
 %files mssql -f files.mssql
 
 %changelog
-* Wed Feb 13 2008 Joe Orton <jorton@redhat.com> 5.2.5-2.fc7
+* Wed Feb 13 2008 Joe Orton <jorton@redhat.com> 5.2.5-3.fc7
 - use system timezone database
 
 * Tue Dec 11 2007 Joe Orton <jorton@redhat.com> 5.2.5-1.fc7
