@@ -6,7 +6,7 @@
 Summary: The PHP HTML-embedded scripting language
 Name: php
 Version: 5.2.5
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: The PHP License v3.01
 Group: Development/Languages
 URL: http://www.php.net/
@@ -679,6 +679,9 @@ rm files.* macros.php
 %files mssql -f files.mssql
 
 %changelog
+* Wed Apr  2 2008 Joe Orton <jorton@redhat.com> 5.2.5-4.fc7
+- rebuild for new uw-imap
+
 * Wed Feb 13 2008 Joe Orton <jorton@redhat.com> 5.2.5-3.fc7
 - use system timezone database
 
