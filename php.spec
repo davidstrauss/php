@@ -5,8 +5,8 @@
 
 Summary: The PHP HTML-embedded scripting language
 Name: php
-Version: 5.2.5
-Release: 7%{?dist}
+Version: 5.2.6
+Release: 2%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -27,7 +27,6 @@ Patch9: php-5.2.4-embed.patch
 Patch21: php-5.2.4-odbc.patch
 Patch22: php-4.3.11-shutdown.patch
 Patch24: php-5.2.3-macropen.patch
-Patch25: php-4.3.9-metaphone.patch
 
 # Functional changes
 Patch30: php-5.0.4-dlopen.patch
@@ -367,7 +366,6 @@ support for using the pspell library to PHP.
 %patch21 -p1 -b .odbc
 %patch22 -p1 -b .shutdown
 %patch24 -p1 -b .macropen
-%patch25 -p1 -b .metaphone
 
 %patch30 -p1 -b .dlopen
 %patch31 -p1 -b .easter
@@ -728,6 +726,9 @@ rm files.* macros.php
 %files pspell -f files.pspell
 
 %changelog
+* Thu May  8 2008 Joe Orton <jorton@redhat.com> 5.2.6-2
+- update to 5.2.6
+
 * Thu Apr 24 2008 Joe Orton <jorton@redhat.com> 5.2.5-7
 - split pspell extension out into php-pspell (#443857)
 
