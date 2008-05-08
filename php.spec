@@ -5,8 +5,8 @@
 
 Summary: The PHP HTML-embedded scripting language
 Name: php
-Version: 5.2.5
-Release: 4%{?dist}
+Version: 5.2.6
+Release: 2%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -27,7 +27,6 @@ Patch9: php-5.2.4-embed.patch
 Patch21: php-5.2.4-odbc.patch
 Patch22: php-4.3.11-shutdown.patch
 Patch24: php-5.2.3-macropen.patch
-Patch25: php-4.3.9-metaphone.patch
 Patch26: php-5.2.5-systzdata.patch
 
 # Functional changes
@@ -357,7 +356,6 @@ into applications to provide PHP scripting language support.
 %patch21 -p1 -b .odbc
 %patch22 -p1 -b .shutdown
 %patch24 -p1 -b .macropen
-%patch25 -p1 -b .metaphone
 %patch26 -p1 -b .systzdata
 
 %patch30 -p1 -b .dlopen
@@ -721,6 +719,9 @@ rm files.* macros.php
 %files mssql -f files.mssql
 
 %changelog
+* Thu May  8 2008 Joe Orton <jorton@redhat.com> 5.2.6-2
+- update to 5.2.6
+
 * Wed Apr  2 2008 Joe Orton <jorton@redhat.com> 5.2.5-4
 - rebuild for new uw-imap
 
