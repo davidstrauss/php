@@ -3,20 +3,22 @@
 %define zendver 20060613
 %define pdover 20060511
 
-Summary: The PHP HTML-embedded scripting language
+%define _default_patch_fuzz 2
+
+Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.2.6
-Release: 2%{?dist}
+Version: 5.2.8
+Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
 
-Source0: http://www.php.net/distributions/php-%{version}.tar.gz
+Source0: http://www.php.net/distributions/php-%{version}.tar.bz2
 Source1: php.conf
 Source2: php.ini
 Source3: macros.php
 
-Patch1: php-5.2.4-gnusrc.patch
+Patch1: php-5.2.6-gnusrc.patch
 Patch2: php-4.3.3-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch5: php-5.0.2-phpize64.patch
@@ -31,17 +33,17 @@ Patch24: php-5.2.3-macropen.patch
 # Functional changes
 Patch30: php-5.0.4-dlopen.patch
 Patch31: php-5.2.4-easter.patch
-Patch32: php-5.2.5-systzdata.patch
+Patch32: php-5.2.6-systzdata.patch
 
 # Fixes for tests
-Patch50: php-5.2.4-tests-dashn.patch
+Patch50: php-5.2.7-tests-dashn.patch
 Patch51: php-5.0.4-tests-wddx.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: bzip2-devel, curl-devel >= 7.9, db4-devel, expat-devel
 BuildRequires: gmp-devel
-BuildRequires: httpd-devel >= 2.0.46-1, libjpeg-devel, libpng-devel, pam-devel
+BuildRequires: httpd-devel >= 2.0.46-1, pam-devel
 BuildRequires: libstdc++-devel, openssl-devel, sqlite-devel >= 3.0.0
 BuildRequires: zlib-devel, pcre-devel >= 6.6, smtpdaemon, readline-devel
 BuildRequires: bzip2, perl, libtool >= 1.4.3, gcc-c++
@@ -267,7 +269,8 @@ support for using the ncurses terminal output interfaces.
 Summary: A module for PHP applications for using the gd graphics library
 Group: Development/Languages
 Requires: php-common = %{version}-%{release}
-BuildRequires: gd-devel, freetype-devel
+# Required to build the bundled GD library
+BuildRequires: libXpm-devel, libjpeg-devel, libpng-devel, freetype-devel, t1lib-devel
 
 %description gd
 The php-gd package contains a dynamic shared object that will add
@@ -324,7 +327,7 @@ support for using the tidy library to PHP.
 %package mssql
 Summary: MSSQL database module for PHP
 Group: Development/Languages
-Requires: php-common = %{version}-%{release}
+Requires: php-common = %{version}-%{release}, php-pdo
 BuildRequires: freetds-devel
 
 %description mssql
@@ -453,7 +456,9 @@ ln -sf ../configure
 	--with-exec-dir=%{_bindir} \
 	--with-freetype-dir=%{_prefix} \
 	--with-png-dir=%{_prefix} \
+	--with-xpm-dir=%{_prefix} \
 	--enable-gd-native-ttf \
+	--with-t1lib=%{_prefix} \
 	--without-gdbm \
 	--with-gettext \
 	--with-gmp \
@@ -525,6 +530,7 @@ build --enable-force-cgi-redirect \
       --with-pdo-mysql=shared,%{_prefix} \
       --with-pdo-pgsql=shared,%{_prefix} \
       --with-pdo-sqlite=shared,%{_prefix} \
+      --with-pdo-dblib=shared,%{_prefix} \
       --enable-json=shared \
       --enable-zip=shared \
       --with-readline \
@@ -573,14 +579,14 @@ unset NO_INTERACTION REPORT_EXIT_STATUS MALLOC_CHECK_
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
+# Install the version for embedded script language in applications + php_embed.h
+make -C build-embedded install-sapi install-headers INSTALL_ROOT=$RPM_BUILD_ROOT
+
 # Install everything from the CGI SAPI build
 make -C build-cgi install INSTALL_ROOT=$RPM_BUILD_ROOT 
 
 # Install the Apache module
 make -C build-apache install-sapi INSTALL_ROOT=$RPM_BUILD_ROOT
-
-# Install the version for embedded script language in applications
-make -C build-embedded install-sapi INSTALL_ROOT=$RPM_BUILD_ROOT
 
 # Install the default configuration file and icons
 install -m 755 -d $RPM_BUILD_ROOT%{_sysconfdir}/
@@ -591,9 +597,6 @@ install -m 644    *.gif $RPM_BUILD_ROOT%{contentdir}/icons/
 # For third-party packaging:
 install -m 755 -d $RPM_BUILD_ROOT%{_libdir}/php/pear \
                   $RPM_BUILD_ROOT%{_datadir}/php
-
-# Use correct libdir
-sed -i -e 's|%{_prefix}/lib|%{_libdir}|' $RPM_BUILD_ROOT%{_sysconfdir}/php.ini
 
 # install the DSO
 install -m 755 -d $RPM_BUILD_ROOT%{_libdir}/httpd/modules
@@ -611,7 +614,7 @@ install -m 700 -d $RPM_BUILD_ROOT%{_localstatedir}/lib/php/session
 for mod in pgsql mysql mysqli odbc ldap snmp xmlrpc imap \
     mbstring ncurses gd dom xsl soap bcmath dba xmlreader xmlwriter \
     pdo pdo_mysql pdo_pgsql pdo_odbc pdo_sqlite json zip \
-    dbase mcrypt mhash tidy mssql pspell; do
+    dbase mcrypt mhash tidy pdo_dblib mssql pspell; do
     cat > $RPM_BUILD_ROOT%{_sysconfdir}/php.d/${mod}.ini <<EOF
 ; Enable ${mod} extension module
 extension=${mod}.so
@@ -629,6 +632,7 @@ cat files.dom files.xsl files.xml{reader,writer} > files.xml
 cat files.mysqli >> files.mysql
 
 # Split out the PDO modules
+cat files.pdo_dblib >> files.mssql
 cat files.pdo_mysql >> files.mysql
 cat files.pdo_pgsql >> files.pgsql
 cat files.pdo_odbc >> files.odbc
@@ -673,7 +677,7 @@ rm files.* macros.php
 %files common -f files.common
 %defattr(-,root,root)
 %doc CODING_STANDARDS CREDITS EXTENSIONS INSTALL LICENSE NEWS README*
-%doc Zend/ZEND_* gd_README TSRM_LICENSE regex_COPYRIGHT
+%doc Zend/ZEND_* TSRM_LICENSE regex_COPYRIGHT
 %config(noreplace) %{_sysconfdir}/php.ini
 %dir %{_sysconfdir}/php.d
 %dir %{_libdir}/php
@@ -715,6 +719,7 @@ rm files.* macros.php
 %files mbstring -f files.mbstring
 %files ncurses -f files.ncurses
 %files gd -f files.gd
+%doc gd_README
 %files soap -f files.soap
 %files bcmath -f files.bcmath
 %files dba -f files.dba
@@ -726,11 +731,32 @@ rm files.* macros.php
 %files pspell -f files.pspell
 
 %changelog
-* Thu May  8 2008 Joe Orton <jorton@redhat.com> 5.2.6-2
+* Sat Jan 03 2009 Remi Collet <Fedora@FamilleCollet.com> 5.2.8-1
+- update to 5.2.8
+- add missing php_embed.h (#457777)
+- enable pdo_dblib driver in php-mssql
+
+* Tue Nov  4 2008 Joe Orton <jorton@redhat.com> 5.2.6-6
+- move gd_README to php-gd
+- update to r4 of systzdata patch; introduces a default timezone
+  name of "System/Localtime", which uses /etc/localtime (#469532)
+
+* Sat Sep 13 2008 Remi Collet <Fedora@FamilleCollet.com> 5.2.6-5
+- enable XPM support in php-gd
+- Fix BR for php-gd
+
+* Sun Jul 20 2008 Remi Collet <Fedora@FamilleCollet.com> 5.2.6-4
+- enable T1lib support in php-gd
+
+* Mon Jul 14 2008 Joe Orton <jorton@redhat.com> 5.2.6-3
 - update to 5.2.6
+- sync default php.ini with upstream
+- drop extension_dir from default php.ini, rely on hard-coded
+  default, to make php-common multilib-safe (#455091)
+- update to r3 of systzdata patch
 
 * Thu Apr 24 2008 Joe Orton <jorton@redhat.com> 5.2.5-7
-- split pspell extension out into php-pspell (#443857)
+- split pspell extension out into php-spell (#443857)
 
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5.2.5-6
 - Autorebuild for GCC 4.3
