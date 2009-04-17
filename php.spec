@@ -7,7 +7,7 @@
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
 Version: 5.2.9
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -32,7 +32,7 @@ Patch21: php-5.2.3-macropen.patch
 # Functional changes
 Patch40: php-5.0.4-dlopen.patch
 Patch41: php-5.2.4-easter.patch
-Patch42: php-5.2.6-systzdata.patch
+Patch42: php-5.2.5-systzdata.patch
 
 # Fixes for tests
 Patch60: php-5.2.7-tests-dashn.patch
@@ -719,6 +719,9 @@ rm files.* macros.php
 %files pspell -f files.pspell
 
 %changelog
+* Fri Apr 17 2009 Joe Orton <jorton@redhat.com> 5.2.9-2
+- stay at v3 of systzdata patch
+
 * Thu Apr 16 2009 Remi Collet <Fedora@FamilleCollet.com> - 5.2.9-1
 - update to 5.2.9
 - merge with some rawhide improvments (fix patch fuzz, renumber
