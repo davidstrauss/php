@@ -6,8 +6,8 @@
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.2.9
-Release: 2%{?dist}
+Version: 5.2.10
+Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -18,12 +18,13 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.2.9-gnusrc.patch
+Patch1: php-5.2.10-gnusrc.patch
 Patch2: php-5.2.8-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.2.8-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
+Patch7: php-5.2.8-recode.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
@@ -90,7 +91,7 @@ Provides: php-zlib, php-json, php-zip, php-dbase
 # To be split in php-process 
 Provides: php-posix, php-sysvsem, php-sysvshm, php-sysvmsg
 
-Obsoletes: php-openssl, php-pecl-zip, php-json, php-dbase
+Obsoletes: php-openssl, php-pecl-zip, php-pecl-json, php-json, php-dbase
 
 %description common
 The php-common package contains files used by both the php
@@ -209,6 +210,26 @@ BuildRequires: libxml2-devel
 %description soap
 The php-soap package contains a dynamic shared object that will add
 support to PHP for using the SOAP web services protocol.
+
+%package interbase
+Summary: 	A module for PHP applications that use Interbase/Firebird databases
+Group: 		Development/Languages
+BuildRequires:  firebird-devel
+Requires: 	php-common = %{version}-%{release}, php-pdo
+Provides: 	php_database, php-firebird, php-pdo_firebird
+
+%description interbase
+The php-interbase package contains a dynamic shared object that will add
+database support through Interbase/Firebird to PHP.
+
+InterBase is the name of the closed-source variant of this RDBMS that was
+developed by Borland/Inprise. 
+
+Firebird is a commercially independent project of C and C++ programmers, 
+technical advisors and supporters developing and enhancing a multi-platform 
+relational database management system based on the source code released by 
+Inprise Corp (now known as Borland Software Corp) under the InterBase Public
+License.
 
 %package snmp
 Summary: A module for PHP applications that query SNMP-managed devices
@@ -355,6 +376,16 @@ BuildRequires: aspell-devel >= 0.50.0
 The php-pspell package contains a dynamic shared object that will add
 support for using the pspell library to PHP.
 
+%package recode
+Summary: A module for PHP applications for using the recode library
+Group: System Environment/Libraries
+Requires: php-common = %{version}-%{release}
+BuildRequires: recode-devel
+
+%description recode
+The php-recode package contains a dynamic shared object that will add
+support for using the recode library to PHP.
+
 %prep
 %setup -q
 %patch1 -p1 -b .gnusrc
@@ -363,6 +394,7 @@ support for using the pspell library to PHP.
 %patch4 -p1 -b .phpize64
 %patch5 -p1 -b .includedir
 %patch6 -p1 -b .embed
+%patch7 -p1 -b .recode
 
 %patch20 -p1 -b .shutdown
 %patch21 -p1 -b .macropen
@@ -449,7 +481,6 @@ ln -sf ../configure
 	--disable-rpath \
 	--without-pear \
 	--with-bz2 \
-	--with-curl \
 	--with-exec-dir=%{_bindir} \
 	--with-freetype-dir=%{_prefix} \
 	--with-png-dir=%{_prefix} \
@@ -470,7 +501,6 @@ ln -sf ../configure
 	--enable-magic-quotes \
 	--enable-sockets \
 	--enable-sysvsem --enable-sysvshm --enable-sysvmsg \
-	--enable-wddx \
 	--with-kerberos \
 	--enable-ucd-snmp-hack \
 	--enable-shmop \
@@ -505,12 +535,16 @@ build --enable-force-cgi-redirect \
       --with-ldap=shared --with-ldap-sasl \
       --with-mysql=shared,%{_prefix} \
       --with-mysqli=shared,%{_bindir}/mysql_config \
+      --with-interbase=shared,%{_libdir}/firebird \
+      --with-pdo-firebird=shared,%{_libdir}/firebird \
       --enable-dom=shared \
       --with-pgsql=shared \
+      --enable-wddx=shared \
       --with-snmp=shared,%{_prefix} \
       --enable-soap=shared \
       --with-xsl=shared,%{_prefix} \
       --enable-xmlreader=shared --enable-xmlwriter=shared \
+      --with-curl=shared,%{_prefix} \
       --enable-fastcgi \
       --enable-pdo=shared \
       --with-pdo-odbc=shared,unixODBC,%{_prefix} \
@@ -527,14 +561,16 @@ build --enable-force-cgi-redirect \
       --with-mhash=shared,%{_prefix} \
       --with-tidy=shared,%{_prefix} \
       --with-mssql=shared,%{_prefix} \
-      --with-unixODBC=shared,%{_prefix}
+      --with-unixODBC=shared,%{_prefix} \
+      --with-recode=shared,%{_prefix}
 popd
 
 without_shared="--without-mysql --without-gd \
       --without-unixODBC --disable-dom \
       --disable-dba --without-unixODBC \
       --disable-pdo --disable-xmlreader --disable-xmlwriter \
-      --disable-json --without-pspell"
+      --disable-json --without-pspell --disable-wddx \
+      --without-curl"
 
 # Build Apache module, and the CLI SAPI, /usr/bin/php
 pushd build-apache
@@ -602,7 +638,8 @@ install -m 700 -d $RPM_BUILD_ROOT%{_localstatedir}/lib/php/session
 for mod in pgsql mysql mysqli odbc ldap snmp xmlrpc imap \
     mbstring ncurses gd dom xsl soap bcmath dba xmlreader xmlwriter \
     pdo pdo_mysql pdo_pgsql pdo_odbc pdo_sqlite json zip \
-    dbase mcrypt mhash tidy pdo_dblib mssql pspell; do
+    dbase mcrypt mhash tidy pdo_dblib mssql pspell curl wddx \
+    recode interbase pdo_firebird; do
     cat > $RPM_BUILD_ROOT%{_sysconfdir}/php.d/${mod}.ini <<EOF
 ; Enable ${mod} extension module
 extension=${mod}.so
@@ -624,13 +661,14 @@ cat files.pdo_dblib >> files.mssql
 cat files.pdo_mysql >> files.mysql
 cat files.pdo_pgsql >> files.pgsql
 cat files.pdo_odbc >> files.odbc
+cat files.pdo_firebird >> files.interbase
 
 # Package pdo_sqlite with pdo; isolating the sqlite dependency
 # isn't useful at this time since rpm itself requires sqlite.
 cat files.pdo_sqlite >> files.pdo
 
 # Package json, dbase and zip in -common.
-cat files.json files.dbase files.zip > files.common
+cat files.json files.dbase files.zip files.curl files.wddx > files.common
 
 # Install the macros file:
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/rpm
@@ -717,8 +755,15 @@ rm files.* macros.php
 %files tidy -f files.tidy
 %files mssql -f files.mssql
 %files pspell -f files.pspell
+%files recode -f files.recode
+%files interbase -f files.interbase
 
 %changelog
+* Thu Jun 25 2009 Remi Collet <Fedora@famillecollet.com> 5.2.10-1
+- update to 5.2.10
+- add interbase and recode sub-packages
+- shared wddx + curl, both in common to avoid update issue
+
 * Fri Apr 17 2009 Joe Orton <jorton@redhat.com> 5.2.9-2
 - stay at v3 of systzdata patch
 
