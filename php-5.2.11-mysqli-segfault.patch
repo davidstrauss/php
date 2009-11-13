@@ -1,0 +1,19 @@
+This is the fix for http://bugs.php.net/bug.php?id=49098
+It is already fixed upstream in 5.2.12 so this patch can be removed for the
+5.2.12+ package
+
+--- php-5.2.11.orig/ext/mysqli/mysqli.c	2009-02-17 10:40:18.000000000 +0000
++++ php-5.2.11/ext/mysqli/mysqli.c	2009-11-13 09:30:55.509382896 +0000
+@@ -1003,7 +1003,11 @@
+ 	if (MyG(error_msg)) {
+ 		efree(MyG(error_msg));
+ 	}
+-	MyG(error_msg) = estrdup(mysql_err);
++	if (mysql_err && *mysql_err) {
++		MyG(error_msg) = estrdup(mysql_err);
++	} else {
++		MyG(error_msg) = NULL;
++	}
+ }
+ /* }}} */
+ 

@@ -6,7 +6,7 @@
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.2.10
+Version: 5.2.11
 Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
@@ -18,7 +18,7 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.2.10-gnusrc.patch
+Patch1: php-5.2.11-gnusrc.patch
 Patch2: php-5.2.8-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.2.8-phpize64.patch
@@ -29,6 +29,7 @@ Patch7: php-5.2.8-recode.patch
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
 Patch21: php-5.2.3-macropen.patch
+Patch22: php-5.2.11-mysqli-segfault.patch
 
 # Functional changes
 Patch40: php-5.0.4-dlopen.patch
@@ -416,6 +417,7 @@ support for using the recode library to PHP.
 
 %patch20 -p1 -b .shutdown
 %patch21 -p1 -b .macropen
+%patch22 -p1 -b .mysqli-segfault
 
 %patch40 -p1 -b .dlopen
 %patch41 -p1 -b .easter
@@ -801,6 +803,10 @@ rm files.* macros.php
 %files interbase -f files.interbase
 
 %changelog
+* Fri Nov 13 2009 Tim Jackson <rpm@timj.co.uk> 5.2.11-1
+- update to 5.2.11
+- add fix for upstream PHP bug #49098 (regression in 5.2.9+)
+
 * Thu Jun 25 2009 Remi Collet <Fedora@famillecollet.com> 5.2.10-1
 - update to 5.2.10
 - add interbase sub-package
