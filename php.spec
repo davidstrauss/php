@@ -7,7 +7,7 @@
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
 Version: 5.2.11
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -25,6 +25,7 @@ Patch4: php-5.2.8-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
 Patch7: php-5.2.8-recode.patch
+Patch8: php-5.3.0-libedit.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
@@ -45,7 +46,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: bzip2-devel, curl-devel >= 7.9, db4-devel, gmp-devel
 BuildRequires: httpd-devel >= 2.0.46-1, pam-devel
 BuildRequires: libstdc++-devel, openssl-devel, sqlite-devel >= 3.0.0
-BuildRequires: zlib-devel, pcre-devel >= 6.6, smtpdaemon, readline-devel
+BuildRequires: zlib-devel, pcre-devel >= 6.6, smtpdaemon, libedit-devel
 BuildRequires: bzip2, perl, libtool >= 1.4.3, gcc-c++
 Obsoletes: php-dbg, php3, phpfi, stronghold-php
 Requires: httpd-mmn = %{httpd_mmn}
@@ -414,6 +415,7 @@ support for using the recode library to PHP.
 %patch5 -p1 -b .includedir
 %patch6 -p1 -b .embed
 %patch7 -p1 -b .recode
+%patch8 -p1 -b .libedit
 
 %patch20 -p1 -b .shutdown
 %patch21 -p1 -b .macropen
@@ -576,7 +578,8 @@ build --enable-force-cgi-redirect \
       --with-pdo-dblib=shared,%{_prefix} \
       --enable-json=shared \
       --enable-zip=shared \
-      --with-readline \
+      --without-readline \
+      --with-libedit \
       --enable-dbase=shared \
       --with-pspell=shared \
       --with-mcrypt=shared,%{_prefix} \
@@ -803,6 +806,9 @@ rm files.* macros.php
 %files interbase -f files.interbase
 
 %changelog
+* Tue Nov 17 2009 Tom "spot" Callaway <tcallawa@redhat.com> 5.2.11-2
+- link to libedit rather than readline to avoid licensing issues
+
 * Fri Nov 13 2009 Tim Jackson <rpm@timj.co.uk> 5.2.11-1
 - update to 5.2.11
 - add fix for upstream PHP bug #49098 (regression in 5.2.9+)
