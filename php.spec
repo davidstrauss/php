@@ -6,8 +6,8 @@
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.2.11
-Release: 2%{?dist}
+Version: 5.2.12
+Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -18,19 +18,17 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.2.11-gnusrc.patch
+Patch1: php-5.2.12-gnusrc.patch
 Patch2: php-5.2.8-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.2.8-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
 Patch7: php-5.2.8-recode.patch
-Patch8: php-5.3.0-libedit.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
 Patch21: php-5.2.3-macropen.patch
-Patch22: php-5.2.11-mysqli-segfault.patch
 
 # Functional changes
 Patch40: php-5.0.4-dlopen.patch
@@ -415,11 +413,9 @@ support for using the recode library to PHP.
 %patch5 -p1 -b .includedir
 %patch6 -p1 -b .embed
 %patch7 -p1 -b .recode
-%patch8 -p1 -b .libedit
 
 %patch20 -p1 -b .shutdown
 %patch21 -p1 -b .macropen
-%patch22 -p1 -b .mysqli-segfault
 
 %patch40 -p1 -b .dlopen
 %patch41 -p1 -b .easter
@@ -728,6 +724,10 @@ rm -rf $RPM_BUILD_ROOT%{_libdir}/php/modules/*.a \
 # Remove irrelevant docs
 rm -f README.{Zeus,QNX,CVS-RULES}
 
+# Fix encoding of docs
+iconv -f iso-8859-1 -t utf-8 < EXTENSIONS > EXTENSIONS.utf8
+mv EXTENSIONS.utf8 EXTENSIONS
+
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 rm files.* macros.php
@@ -806,6 +806,11 @@ rm files.* macros.php
 %files interbase -f files.interbase
 
 %changelog
+* Sun Jan 10 2010 Tim Jackson <rpm@timj.co.uk> 5.2.12-1
+- update to 5.2.12
+- remove libedit patch (fixed upstream)
+- fix encoding of EXTENSIONS file
+
 * Tue Nov 17 2009 Tom "spot" Callaway <tcallawa@redhat.com> 5.2.11-2
 - link to libedit rather than readline to avoid licensing issues
 
