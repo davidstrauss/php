@@ -9,11 +9,14 @@
 %global zipver      1.9.1
 %global jsonver     1.2.1
 
-%define httpd_mmn %(cat %{_includedir}/httpd/.mmn || echo missing-httpd-devel)
+%global httpd_mmn %(cat %{_includedir}/httpd/.mmn || echo missing-httpd-devel)
+
+# Regression tests take a long time, you can skip 'em with this
+%{!?runselftest: %{expand: %%global runselftest 1}}
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.3.1
+Version: 5.3.2
 Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
@@ -25,15 +28,15 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.3.1-gnusrc.patch
+Patch1: php-5.3.2-gnusrc.patch
 Patch2: php-5.3.0-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.3.0-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
 Patch7: php-5.3.0-recode.patch
-# Filed upstream: http://bugs.php.net/50209
-Patch9: php-5.3.0-libedit.patch
+# http://bugs.php.net/50578
+Patch9: php-5.3.2-phar.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
@@ -430,7 +433,7 @@ support for using the enchant library to PHP.
 %patch5 -p1 -b .includedir
 %patch6 -p1 -b .embed
 %patch7 -p1 -b .recode
-%patch9 -p1 -b .libedit
+%patch9 -p1 -b .shebang
 
 %patch20 -p1 -b .shutdown
 %patch21 -p1 -b .macropen
@@ -517,6 +520,7 @@ libtoolize --force --copy
 cat `aclocal --print-ac-dir`/{libtool,ltoptions,ltsugar,ltversion,lt~obsolete}.m4 >build/libtool.m4
 
 # Regenerate configure scripts (patches change config.m4's)
+touch configure.in
 ./buildconf --force
 
 CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing -Wno-pointer-sign"
@@ -569,7 +573,6 @@ ln -sf ../configure
 	--enable-ucd-snmp-hack \
 	--enable-shmop \
 	--enable-calendar \
-        --without-mime-magic \
         --without-sqlite \
         --with-libxml-dir=%{_prefix} \
 	--enable-xml \
@@ -666,6 +669,7 @@ popd
 ### the last SAPI to be built.
 
 %check
+%if %runselftest
 cd build-apache
 # Run tests, using the CLI SAPI
 export NO_INTERACTION=1 REPORT_EXIT_STATUS=1 MALLOC_CHECK_=2
@@ -681,6 +685,7 @@ if ! make test; then
   #exit 1
 fi
 unset NO_INTERACTION REPORT_EXIT_STATUS MALLOC_CHECK_
+%endif
 
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
@@ -860,6 +865,13 @@ rm files.* macros.php
 %files enchant -f files.enchant
 
 %changelog
+* Sat Mar 06 2010 Remi Collet <Fedora@famillecollet.com> 5.3.2-1
+- PHP 5.3.2 Released!
+- remove mime_magic option (now provided by fileinfo, by emu)
+- add patch for http://bugs.php.net/50578
+- remove patch for libedit (upstream)
+- add runselftest option to allow build without test suite
+
 * Fri Nov 20 2009 Remi Collet <Fedora@famillecollet.com> 5.3.1-1
 - update to 5.3.1
 - remove openssl patch (merged upstream)
