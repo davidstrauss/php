@@ -6,7 +6,7 @@
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.2.12
+Version: 5.2.13
 Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
@@ -18,7 +18,7 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.2.12-gnusrc.patch
+Patch1: php-5.2.13-gnusrc.patch
 Patch2: php-5.2.8-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.2.8-phpize64.patch
@@ -806,6 +806,9 @@ rm files.* macros.php
 %files interbase -f files.interbase
 
 %changelog
+* Sat Mar 06 2010 Tim Jackson <rpm@timj.co.uk> 5.2.13-1
+- update to 5.2.13
+
 * Sun Jan 10 2010 Tim Jackson <rpm@timj.co.uk> 5.2.12-1
 - update to 5.2.12
 - remove libedit patch (fixed upstream)
