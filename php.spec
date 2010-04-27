@@ -17,7 +17,7 @@
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
 Version: 5.3.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -37,6 +37,7 @@ Patch6: php-5.2.4-embed.patch
 Patch7: php-5.3.0-recode.patch
 # http://bugs.php.net/50578
 Patch9: php-5.3.2-phar.patch
+Patch10: php-5.3.2-gc.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
@@ -434,6 +435,7 @@ support for using the enchant library to PHP.
 %patch6 -p1 -b .embed
 %patch7 -p1 -b .recode
 %patch9 -p1 -b .shebang
+%patch10 -p4 -b .gc
 
 %patch20 -p1 -b .shutdown
 %patch21 -p1 -b .macropen
@@ -849,6 +851,7 @@ rm files.* macros.php
 %files xmlrpc -f files.xmlrpc
 %files mbstring -f files.mbstring
 %files gd -f files.gd
+%defattr(-,root,root,-)
 %doc gd_README
 %files soap -f files.soap
 %files bcmath -f files.bcmath
@@ -865,6 +868,9 @@ rm files.* macros.php
 %files enchant -f files.enchant
 
 %changelog
+* Tue Apr 27 2010 Remi Collet <Fedora@famillecollet.com> 5.3.2-2
+- garbage collector upstream  patches (#580236)
+
 * Sat Mar 06 2010 Remi Collet <Fedora@famillecollet.com> 5.3.2-1
 - PHP 5.3.2 Released!
 - remove mime_magic option (now provided by fileinfo, by emu)
