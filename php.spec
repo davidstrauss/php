@@ -16,8 +16,8 @@
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.3.2
-Release: 2%{?dist}
+Version: 5.3.3
+Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -28,25 +28,22 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.3.2-gnusrc.patch
+Patch1: php-5.3.3-gnusrc.patch
 Patch2: php-5.3.0-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.3.0-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
 Patch7: php-5.3.0-recode.patch
-# http://bugs.php.net/50578
-Patch9: php-5.3.2-phar.patch
-Patch10: php-5.3.2-gc.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
-Patch21: php-5.2.3-macropen.patch
+Patch21: php-5.3.3-macropen.patch
 
 # Functional changes
 Patch40: php-5.0.4-dlopen.patch
 Patch41: php-5.3.0-easter.patch
-Patch42: php-5.3.0-systzdata-v6.patch
+Patch42: php-5.3.1-systzdata-v7.patch
 
 # Fixes for tests
 Patch61: php-5.0.4-tests-wddx.patch
@@ -434,8 +431,6 @@ support for using the enchant library to PHP.
 %patch5 -p1 -b .includedir
 %patch6 -p1 -b .embed
 %patch7 -p1 -b .recode
-%patch9 -p1 -b .shebang
-%patch10 -p4 -b .gc
 
 %patch20 -p1 -b .shutdown
 %patch21 -p1 -b .macropen
@@ -458,6 +453,8 @@ mkdir build-cgi build-apache build-embedded build-zts
 # Remove bogus test; position of read position after fopen(, "a+")
 # is not defined by C standard, so don't presume anything.
 rm -f ext/standard/tests/file/bug21131.phpt
+# php_egg_logo_guid() removed by patch41
+rm -f tests/basic/php_egg_logo_guid.phpt
 
 # Tests that fail.
 rm -f ext/standard/tests/file/bug22414.phpt \
@@ -868,8 +865,15 @@ rm files.* macros.php
 %files enchant -f files.enchant
 
 %changelog
-* Tue Apr 27 2010 Remi Collet <Fedora@famillecollet.com> 5.3.2-2
+* Thu Jul 22 2010 Remi Collet <Fedora@famillecollet.com> 5.3.3-1
+- PHP 5.3.3 released
+- update to v7 of systzdata patch
+
+* Fri Apr 30 2010 Remi Collet <Fedora@famillecollet.com> 5.3.2-3
 - garbage collector upstream  patches (#580236)
+
+* Fri Apr 02 2010 Caolán McNamara <caolanm@redhat.com> 5.3.2-2
+- rebuild for icu 4.4
 
 * Sat Mar 06 2010 Remi Collet <Fedora@famillecollet.com> 5.3.2-1
 - PHP 5.3.2 Released!
@@ -877,6 +881,12 @@ rm files.* macros.php
 - add patch for http://bugs.php.net/50578
 - remove patch for libedit (upstream)
 - add runselftest option to allow build without test suite
+
+* Fri Nov 27 2009 Joe Orton <jorton@redhat.com> - 5.3.1-3
+- update to v7 of systzdata patch
+
+* Wed Nov 25 2009 Joe Orton <jorton@redhat.com> - 5.3.1-2
+- fix build with autoconf 2.6x
 
 * Fri Nov 20 2009 Remi Collet <Fedora@famillecollet.com> 5.3.1-1
 - update to 5.3.1
