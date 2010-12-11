@@ -16,7 +16,7 @@
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.3.3
+Version: 5.3.4
 Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
@@ -28,14 +28,14 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.3.3-gnusrc.patch
+Patch1: php-5.3.4-gnusrc.patch
 Patch2: php-5.3.0-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.3.0-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
 Patch7: php-5.3.0-recode.patch
-Patch8: php-5.3.3-aconf26x.patch
+Patch8: php-5.3.4-aconf26x.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
@@ -45,6 +45,8 @@ Patch21: php-5.3.3-macropen.patch
 Patch40: php-5.0.4-dlopen.patch
 Patch41: php-5.3.0-easter.patch
 Patch42: php-5.3.1-systzdata-v7.patch
+# See http://bugs.php.net/53436
+Patch43: php-5.3.4-phpize.patch
 
 # Fixes for tests
 Patch61: php-5.0.4-tests-wddx.patch
@@ -67,7 +69,7 @@ Requires(pre): httpd
 
 %description
 PHP is an HTML-embedded scripting language. PHP attempts to make it
-easy for developers to write dynamically generated webpages. PHP also
+easy for developers to write dynamically generated web pages. PHP also
 offers built-in database integration for several commercial and
 non-commercial database management systems, so writing a
 database-enabled webpage with PHP is fairly simple. The most common
@@ -314,7 +316,8 @@ Summary: A module for PHP applications for using the gd graphics library
 Group: Development/Languages
 Requires: php-common = %{version}-%{release}
 # Required to build the bundled GD library
-BuildRequires: libXpm-devel, libjpeg-devel, libpng-devel, freetype-devel, t1lib-devel
+BuildRequires: libjpeg-devel, libpng-devel, freetype-devel
+BuildRequires: libXpm-devel, t1lib-devel
 
 %description gd
 The php-gd package contains a dynamic shared object that will add
@@ -440,6 +443,7 @@ support for using the enchant library to PHP.
 %patch40 -p1 -b .dlopen
 %patch41 -p1 -b .easter
 %patch42 -p1 -b .systzdata
+%patch43 -p0 -b .headers
 
 %patch61 -p1 -b .tests-wddx
 
@@ -818,7 +822,10 @@ rm files.* macros.php
 %{_bindir}/php-cgi
 %{_bindir}/phar.phar
 %{_bindir}/phar
+# provides phpize here (not in -devel) for pecl command
+%{_bindir}/phpize
 %{_mandir}/man1/php.1*
+%{_mandir}/man1/phpize.1*
 %doc sapi/cgi/README* sapi/cli/README
 
 %files zts
@@ -828,11 +835,9 @@ rm files.* macros.php
 %files devel
 %defattr(-,root,root)
 %{_bindir}/php-config
-%{_bindir}/phpize
 %{_includedir}/php
 %{_libdir}/php/build
 %{_mandir}/man1/php-config.1*
-%{_mandir}/man1/phpize.1*
 %config %{_sysconfdir}/rpm/macros.php
 
 %files embedded
@@ -867,6 +872,11 @@ rm files.* macros.php
 %files enchant -f files.enchant
 
 %changelog
+* Sat Dec 11 2010 Remi Collet <Fedora@famillecollet.com> 5.3.4-1
+- update to 5.3.4
+  http://www.php.net/ChangeLog-5.php#5.3.4
+- move phpize to php-cli (see #657812)
+
 * Thu Jul 22 2010 Remi Collet <Fedora@famillecollet.com> 5.3.3-1
 - PHP 5.3.3 released
 
