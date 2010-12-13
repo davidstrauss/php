@@ -9,6 +9,7 @@
 %global zipver      1.9.1
 %global jsonver     1.2.1
 
+
 %global httpd_mmn %(cat %{_includedir}/httpd/.mmn || echo missing-httpd-devel)
 
 # Regression tests take a long time, you can skip 'em with this
