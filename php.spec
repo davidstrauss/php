@@ -14,10 +14,14 @@
 # Regression tests take a long time, you can skip 'em with this
 %{!?runselftest: %{expand: %%global runselftest 1}}
 
+# Use the arch-specific mysql_config binary to avoid mismatch with the
+# arch detection heuristic used by bindir/mysql_config.
+%define mysql_config %{_libdir}/mysql/mysql_config
+
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.3.4
-Release: 1%{?dist}.1
+Version: 5.3.5
+Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
 URL: http://www.php.net/
@@ -35,7 +39,7 @@ Patch4: php-5.3.0-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
 Patch7: php-5.3.0-recode.patch
-Patch8: php-5.3.4-aconf26x.patch
+Patch8: php-5.3.5-aconf26x.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
@@ -521,6 +525,9 @@ if test "$ver" != "%{jsonver}"; then
    exit 1
 fi
 
+# Fix some bogus permissions
+find . -name \*.[ch] -exec chmod 644 {} \;
+chmod 644 README.*
 
 %build
 # aclocal workaround - to be improved
@@ -579,7 +586,6 @@ ln -sf ../configure
 	--enable-ftp \
 	--enable-magic-quotes \
 	--enable-sockets \
-	--enable-sysvsem --enable-sysvshm --enable-sysvmsg \
 	--with-kerberos \
 	--enable-ucd-snmp-hack \
 	--enable-shmop \
@@ -611,7 +617,7 @@ build --enable-force-cgi-redirect \
       --with-xmlrpc=shared \
       --with-ldap=shared --with-ldap-sasl \
       --with-mysql=shared,%{_prefix} \
-      --with-mysqli=shared,%{_bindir}/mysql_config \
+      --with-mysqli=shared,%{mysql_config} \
       --with-interbase=shared,%{_libdir}/firebird \
       --with-pdo-firebird=shared,%{_libdir}/firebird \
       --enable-dom=shared \
@@ -625,7 +631,7 @@ build --enable-force-cgi-redirect \
       --enable-fastcgi \
       --enable-pdo=shared \
       --with-pdo-odbc=shared,unixODBC,%{_prefix} \
-      --with-pdo-mysql=shared,%{_prefix} \
+      --with-pdo-mysql=shared,%{mysql_config} \
       --with-pdo-pgsql=shared,%{_prefix} \
       --with-pdo-sqlite=shared,%{_prefix} \
       --with-pdo-dblib=shared,%{_prefix} \
@@ -726,7 +732,7 @@ install -m 755 build-zts/libs/libphp5.so $RPM_BUILD_ROOT%{_libdir}/httpd/modules
 
 # Apache config fragment
 install -m 755 -d $RPM_BUILD_ROOT/etc/httpd/conf.d
-install -m 644 $RPM_SOURCE_DIR/php.conf $RPM_BUILD_ROOT/etc/httpd/conf.d
+install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/httpd/conf.d
 
 install -m 755 -d $RPM_BUILD_ROOT%{_sysconfdir}/php.d
 #install -m 755 -d $RPM_BUILD_ROOT%{_sysconfdir}/php-zts.d
@@ -780,7 +786,7 @@ cat files.json files.zip files.curl files.phar files.fileinfo > files.common
 # Install the macros file:
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/rpm
 sed -e "s/@PHP_APIVER@/%{apiver}/;s/@PHP_ZENDVER@/%{zendver}/;s/@PHP_PDOVER@/%{pdover}/" \
-    < $RPM_SOURCE_DIR/macros.php > macros.php
+    < %{SOURCE3} > macros.php
 install -m 644 -c macros.php \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.php
 
@@ -878,6 +884,13 @@ rm files.* macros.php
 %files enchant -f files.enchant
 
 %changelog
+* Fri Jan 07 2011 Remi Collet <Fedora@famillecollet.com> 5.3.5-1
+- update to 5.3.5
+  http://www.php.net/ChangeLog-5.php#5.3.5
+- clean duplicate configure options
+- remove all RPM_SOURCE_DIR
+- use mysql_config in libdir directly to avoid biarch build failures
+
 * Sun Dec 12 2010 Remi Collet <rpms@famillecollet.com> 5.3.4-1.1
 - security patch from upstream for #660517
 
