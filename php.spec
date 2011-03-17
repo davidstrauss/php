@@ -20,7 +20,7 @@
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.3.5
+Version: 5.3.6
 Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
@@ -32,14 +32,14 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.3.4-gnusrc.patch
+Patch1: php-5.3.6-gnusrc.patch
 Patch2: php-5.3.0-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.3.0-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
 Patch7: php-5.3.0-recode.patch
-Patch8: php-5.3.5-aconf26x.patch
+Patch8: php-5.3.6-aconf26x.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
@@ -51,10 +51,6 @@ Patch41: php-5.3.0-easter.patch
 Patch42: php-5.3.1-systzdata-v7.patch
 # See http://bugs.php.net/53436
 Patch43: php-5.3.4-phpize.patch
-
-# Security patch from upstream SVN
-# http://svn.php.net/viewvc?view=revision&revision=306154
-Patch50: php-5.3.4-cve.patch
 
 # Fixes for tests
 Patch61: php-5.0.4-tests-wddx.patch
@@ -452,8 +448,6 @@ support for using the enchant library to PHP.
 %patch41 -p1 -b .easter
 %patch42 -p1 -b .systzdata
 %patch43 -p0 -b .headers
-
-%patch50 -p4 -b .cve
 
 %patch61 -p1 -b .tests-wddx
 
@@ -884,6 +878,10 @@ rm files.* macros.php
 %files enchant -f files.enchant
 
 %changelog
+* Thu Mar 16 2011 Remi Collet <Fedora@famillecollet.com> 5.3.6-1
+- update to 5.3.6
+  http://www.php.net/ChangeLog-5.php#5.3.6
+
 * Fri Jan 07 2011 Remi Collet <Fedora@famillecollet.com> 5.3.5-1
 - update to 5.3.5
   http://www.php.net/ChangeLog-5.php#5.3.5
