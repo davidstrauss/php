@@ -16,11 +16,11 @@
 
 # Use the arch-specific mysql_config binary to avoid mismatch with the
 # arch detection heuristic used by bindir/mysql_config.
-%define mysql_config %{_libdir}/mysql/mysql_config
+%global mysql_config %{_libdir}/mysql/mysql_config
 
 Summary: PHP scripting language for creating dynamic web sites
 Name: php
-Version: 5.3.6
+Version: 5.3.7
 Release: 1%{?dist}
 License: PHP
 Group: Development/Languages
@@ -32,14 +32,16 @@ Source2: php.ini
 Source3: macros.php
 
 # Build fixes
-Patch1: php-5.3.6-gnusrc.patch
+Patch1: php-5.3.7-gnusrc.patch
 Patch2: php-5.3.0-install.patch
 Patch3: php-5.2.4-norpath.patch
 Patch4: php-5.3.0-phpize64.patch
 Patch5: php-5.2.0-includedir.patch
 Patch6: php-5.2.4-embed.patch
 Patch7: php-5.3.0-recode.patch
-Patch8: php-5.3.6-aconf26x.patch
+# from http://svn.php.net/viewvc?view=revision&revision=311042
+# and  http://svn.php.net/viewvc?view=revision&revision=311908
+Patch8: php-5.3.7-aconf259.patch
 
 # Fixes for extension modules
 Patch20: php-4.3.11-shutdown.patch
@@ -878,6 +880,10 @@ rm files.* macros.php
 %files enchant -f files.enchant
 
 %changelog
+* Thu Aug 18 2011 Remi Collet <remi@fedoraproject.org> 5.3.7-1
+- update to 5.3.7
+  http://www.php.net/ChangeLog-5.php#5.3.7
+
 * Thu Mar 16 2011 Remi Collet <Fedora@famillecollet.com> 5.3.6-1
 - update to 5.3.6
   http://www.php.net/ChangeLog-5.php#5.3.6
